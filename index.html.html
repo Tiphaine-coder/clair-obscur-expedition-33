@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clair-Obscur : Expédition 33</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+AU+NSW&display=swap" rel="stylesheet">
+
+    <style>
+    @media (max-width: 1024px) {}
+
+      body {
+        margin: 0;
+        background: #f5f5e6;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow: auto;
+      }
+
+      /* Animations */
+      .fade-in {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 2s ease, transform 2s ease;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0); /* retour à position centrée */
+      }
+        
+      /* Medias */
+      #slide1 video {
+        /* Adapte la vidéo à la taille de l'écran */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Pour mobile */
+        object-fit: cover;
+        z-index: -1;
+      }
+
+      .video-slide4 {
+        /* Adapter une vidéo à la taille de l'écran */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        height: 90vh;
+        object-fit: cover;
+      }
+
+      .image-moitié {
+        max-width: 50%;
+        max-height: 80vh;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .image-seule {
+        flex: 0.25;
+        border-radius: 12px;
+        max-width: clamp(200px, 30vw, 600px); /* mini 200px, idéal moitié écran, max 600px */
+        max-height: clamp(150px, 50vh, 400px);
+        /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
+        object-fit: contain;
+      }
+
+      .images-groupe {
+        flex: 1;
+        object-fit:contain;
+        max-width: clamp(50px, 12vw, 250px);
+        max-height: clamp(100px, 25vh, 200px);
+        align-items:center;
+      }
+
+      .image-ecran {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        height: 90vh;
+        object-fit: cover;
+      }
+
+      /* Slides */
+      .slide.layout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100vh;
+        padding: 60px 80px;
+        gap: 40px;
+        background-color: #f5f5e6;
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      /* Compartiments */
+      .bloc-colonne {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: self-start;
+        justify-content: center;
+        pointer-events:none;
+        padding: 6%;
+      }
+
+      .bloc-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .bloc-titres {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(10px, 3vh, 30px); /* taille min, taille idéale, taille max 600px */
+        text-align: center;
+        pointer-events: none;
+      }
+      
+      .colonne-gauche {
+        flex: 0.4;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 20px;
+      }
+      .colonne-droite {
+        flex: 0.6;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+      
+      .colonne-centre {
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-end; /* colle l'obélisque en bas */
+        justify-content: center;
+        position: relative;
+        height: 100%;
+      }
+
+      .conteneur-btns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
+      }
+
+      /* Titres et sous-titres */
+
+      #titre-accueil{
+        font-size: clamp(40px, 10vw, 84px);
+        font-weight: bold;
+        font-style: italic;
+        color: #A5917C;
+        -webkit-text-stroke: 1px white;
+        text-align: center;
+        pointer-events: none;
+      }
+      #sous-titre-accueil {
+        font-size: clamp(20px, 5vw, 42px);
+        font-weight: bold;
+        font-style: italic;
+        color: #A5917C;
+        -webkit-text-stroke: 1px white;
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .titre {
+        font-size: clamp(40px, 10vw, 84px);
+        font-weight: bold;
+        font-style: italic;
+        color: #a27a4c;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 1.5s ease, transform 1.5s ease;
+        pointer-events: none;
+      }
+
+      .sous-titre {
+        font-size: clamp(15px, 3.75vw, 31.5px);
+        font-weight: bold;
+        font-style: italic;
+        color: #a27a4c;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 1.5s ease, transform 1.5s ease;
+        pointer-events: none;
+      }
+
+      #titre3 {
+        color: white;
+        background-color: #a27a4c;
+        display: inline-block;
+        padding: clamp(5px, 2vw, 15px);
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: justify;
+        align-self: center;
+      }
+
+      #titre5, #titre6, #titre7, #titre8, #titre9, #titre10, #titre11 {
+        text-decoration: underline;
+        display: inline-block;
+        padding: clamp(10px, 4vw, 30px);
+        border-radius: 6px;
+        margin-bottom: 20px;
+        align-self: center;
+      }
+
+      #titre12, #titre13, #titre14, #titre15, #titre16, #titre17, #titre18, #titre19 {
+        text-decoration: underline;
+        display: inline-block;
+        padding: clamp(10px, 4vw, 30px);
+        border-radius: 6px;
+        margin-bottom: 20px;
+        align-self: center;
+        font-family: 'Playwrite AU NSW', cursive;
+      }
+
+      /* Textes */
+      .texte {
+        font-size: clamp(16px, 2.2vw, 20px);
+        line-height: 1.6;
+        color: #5a4b3e;
+        text-align: justify;
+        padding: clamp(10px, 4vw, 30px);
+      }
+
+      .citation {
+        font-style: italic;
+        font-size: clamp(16px, 2vw, 22px);
+        color: #5a4b3e;
+        border-left: 4px solid #a5917c;
+        padding-left: 16px;
+        margin: 20px 0;
+        background-color: #f9f6f2;
+        line-height: 1.2;
+        text-align: center;
+        align-self: center;
+      }
+
+      #paragraphe3 {
+        padding: 0;
+      }
+
+      /* Boutons */
+      #btn-musique { /* Bouton pour démarrer la musique */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: clamp(12px, 2vh, 20px) clamp(20px, 5vw, 40px);
+        font-size: clamp(16px, 4vw, 24px);
+        background-color: #A5917C;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+      #btn-musique:hover {
+        background-color: #8c7764;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+
+      .btn-suivant { /* Bouton pour passer à la slide suivante */
+        position: fixed;
+        bottom: clamp(16px, 4vh, 30px);
+        right: clamp(16px, 4vw, 30px);
+        padding: clamp(8px, 1.5vh, 12px) clamp(16px, 4vw, 24px);
+        font-size: clamp(14px, 3vw, 18px);
+        background-color: #A5917C;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px); /* glisse légèrement vers le haut */
+        z-index: 10;
+        pointer-events: auto;
+      }
+      .btn-suivant:hover {
+        background-color: #8c7764;
+      }
+      .btn-suivant.visible {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 1.5s ease, transform 1.5s ease; /* adoucir l'apparition */
+      }
+
+      .btn-texte { /* Bouton pour passer au paragraphe suivant */
+        align-self:flex-end;
+        padding: clamp(8px, 1.5vh, 12px) clamp(16px, 4vw, 24px);
+        font-size: clamp(14px, 3vw, 18px);
+        background-color: #A5917C;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px); /* glisse légèrement vers le haut */
+        pointer-events: auto;
+      }
+      .btn-texte:hover {
+        background-color: #8c7764;
+      }
+      .btn-texte.visible {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 1.5s ease, transform 1.5s ease; /* adoucir l'apparition */
+      }
+      .btn-texte.visibleR {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Formes */
+      .forme-obelisque {
+        width: clamp(20px, 3vw, 40px);
+        height: clamp(200px, 60vh, 800px);
+        background-color: #111;
+        clip-path: polygon(50% 0%, 100% 3%, 100% 100%, 0% 100%, 0% 3%);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      
+    </style>
+  </head>
+
+  <body>
+    <div class="slide" id="slide1">
+      <!-- Chargement des médias -->
+      <video src="videos/ecran-titre.mp4" autoplay muted loop></video> <!-- Vidéo -->
+      <audio id="musique1" src="audios/alicia.mp3" loop></audio> <!-- Audios -->
+      <audio id="musique2" src="audios/lumiere.mp3" loop></audio>
+      <audio id="musique3" src="audios/gustave.mp3" loop></audio>
+      <audio id="musique4" src="audios/divided-swords.mp3" loop></audio>
+      <audio id="musique5" src="audios/lettre-a-maelle.mp3" loop></audio>
+      <audio id="musique6" src="audios/for-those-who-come-after-instrumental-reveal-trailer.mp3" loop></audio>
+      <audio id="musique7" src="audios/hold-me-esquie.mp3" loop></audio>
+      <audio id="accord" src="audios/accord.mp3"></audio>
+      <audio id="musique8" src="audios/aux-lendemains-non-ecrits.mp3" loop></audio>
+      <audio id="musique9" src="audios/avasha-kapasatara.mp3" loop></audio>
+      <audio id="musique10" src="audios/maelle.mp3" loop></audio>
+      <audio id="musique11" src="audios/renoir.mp3" loop></audio>
+      <audio id="musique12" src="audios/linen-and-cotton.mp3" loop></audio>
+      <audio id="musique13" src="audios/dechire-la-toile.mp3" loop></audio>
+      <audio id="musique14" src="audios/the-dualliste.mp3" loop></audio>
+      <audio id="musique15" src="audios/aria-pour-un-masque-de-colere.mp3" loop></audio>
+      <audio id="musique16" src="audios/for-those-who-come-after-instrumental.mp3" loop></audio>
+      <audio id="musique17" src="audios/une-vie-a-t-aimer.mp3" loop></audio>
+      <audio id="musique18" src="audios/aline.mp3" loop></audio>
+
+      <!-- Diapo 1 -->
+      <div class="bloc-titres">
+        <h1 id="titre-accueil" class="fade-in">CLAIR-OBSCUR : EXPEDITION 33</h1>
+        <h1 id="sous-titre-accueil" class="fade-in">UN VOYAGE POETIQUE ET MUSICAL</h1>
+      </div>
+        <button id="btn-musique">Démarrer</button> <!-- Bouton musique -->
+        <button class="btn-suivant" style="display: none;">→</button>
+      </div>
+    </div>
+
+    <!-- Diapo 2 -->
+      <div class="slide layout" id="slide2" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+        <!-- Colonne gauche titre -->
+        <div class="colonne-gauche">
+          <h1 class="titre fade-in" id="titre2">CRÉATION DU JEU</h1>
+          <h1 class="sous-titre fade-in" id="sous-titre2">NAISSANCE D'UN CHEF-D’ŒUVRE VIDÉOLUDIQUE FRANÇAIS</h1>
+        </div>
+        <!-- Colonne centrale : obélisque -->
+        <div class="colonne-centre">
+          <div class="forme-obelisque"></div>
+        </div>
+        <!-- Colonne droite : texte -->
+        <div class="colonne-droite">
+          <div class="bloc-colonne">
+            <p class="texte fade-in" id="paragraphe2"></p>            
+            <button class="btn-suivant" style="display: none">→</button>
+              <div class="conteneur-btns">
+                <button class="btn-texte" id="texte-r2">← Retour</button>
+                <button class="btn-texte" id="texte-s2">Suivant →</button>
+              </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Diapo 3 -->
+    <div class="slide layout" id="slide3" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre3">UN UNIVERS ATYPIQUE</h1>
+        <p class="texte fade-in" id="paragraphe3"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r3">← Retour</button>
+          <button class="btn-texte" id="texte-s3">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-moitié" id="image3" alt="Illustration" />
+      </div>
+    </div>
+
+    <!-- Diapo 4 -->
+    <div class="slide layout" id="slide4" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <video class="video-slide4" src="videos/gommage.mp4" controls autoplay></video>
+          <!-- style="max-width: 100%; max-height: 90vh; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"> -->
+    </div>
+
+    <!-- Diapo 5 -->
+    <div class="slide layout" id="slide5" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre5">L'Expédition 33 et le continent</h1>
+        <p class="texte fade-in" id="paragraphe5"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r5">← Retour</button>
+          <button class="btn-texte" id="texte-s5">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image" id="imageContainer5"></div>
+    </div>
+
+    <!-- Diapo 6 -->
+    <div class="slide layout" id="slide6" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre6">BOULEVERSEMENTS</h1>
+        <p class="texte fade-in" id="paragraphe6"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r6">← Retour</button>
+          <button class="btn-texte" id="texte-s6">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 7 -->
+    <div class="slide layout" id="slide7" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre7">UN MONDE PEINT ET UNE FAMILLE EN DEUIL</h1>
+        <p class="texte fade-in" id="paragraphe7"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r7">← Retour</button>
+          <button class="btn-texte" id="texte-s7">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 8 -->
+    <div class="slide layout" id="slide8" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre8">TROISIEME ACTE</h1>
+        <p class="texte fade-in" id="paragraphe8"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r8">← Retour</button>
+          <button class="btn-texte" id="texte-s8">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 9 -->
+    <div class="slide layout" id="slide9" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre9">MAELLE: FUIR LA DOULEUR, PEINDRE UN BONHEUR ARTIFICIEL</h1>
+        <p class="texte fade-in" id="paragraphe9"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r9">← Retour</button>
+          <button class="btn-texte" id="texte-s9">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img src="images/Maelle-peintresse.jpg" class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 10 -->
+    <div class="slide layout" id="slide10" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre10">VERSO: CASSER L'ILLUSION, AFFRONTER LA DOULEUR</h1>
+        <p class="texte fade-in" id="paragraphe10"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r10">← Retour</button>
+          <button class="btn-texte" id="texte-s10">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 11 -->
+    <div class="slide layout" id="slide11" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre11">UNE BANDE-SON CENTRALE : LA MUSIQUE COMME VECTEUR NARRATIF DANS CLAIR-OBSCUR</h1>
+        <p class="texte fade-in" id="paragraphe11"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r11">← Retour</button>
+          <button class="btn-texte" id="texte-s11">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 12 -->
+    <div class="slide layout" id="slide12" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre12"><em>Alicia</em> : un thème funèbre dès l’écran d’accueil</h1>
+        <p class="texte fade-in" id="paragraphe12"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r12">← Retour</button>
+          <button class="btn-texte" id="texte-s12">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 13 -->
+    <div class="slide layout" id="slide13" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre13"><em>Lumière</em> : une chanson d’ouverture riche en indices</h1>
+        <p class="texte fade-in" id="paragraphe13"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r13">← Retour</button>
+          <button class="btn-texte" id="texte-s13">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 14 -->
+    <div class="slide layout" id="slide14" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre14"><em>Renoir</em> : une mise en place des principaux acteurs du jeu</h1>
+        <p class="texte fade-in" id="paragraphe14"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r14">← Retour</button>
+          <button class="btn-texte" id="texte-s14">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 15 -->
+    <div class="slide layout" id="slide15" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre15"><em>Linen and Cotton</em> : indices précurseurs d’un monde peint</h1>
+        <p class="texte fade-in" id="paragraphe15"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r15">← Retour</button>
+          <button class="btn-texte" id="texte-s15">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 16 -->
+    <div class="slide layout" id="slide16" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre16"><em>The Dualliste & Déchire la Toile</em>: les chants du déchirement familial</h1>
+        <p class="texte fade-in" id="paragraphe16"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r16">← Retour</button>
+          <button class="btn-texte" id="texte-s16">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 17 -->
+    <div class="slide layout" id="slide17" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre17"><em>Aria pour un masque de colère</em> : ode à un frère disparu</h1>
+        <p class="texte fade-in" id="paragraphe17"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r17">← Retour</button>
+          <button class="btn-texte" id="texte-s17">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 18 -->
+    <div class="slide layout" id="slide18" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre18"><em>Une vie à t'aimer</em> : un duel d’amour</h1>
+        <p class="texte fade-in" id="paragraphe18"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r18">← Retour</button>
+          <button class="btn-texte" id="texte-s18">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 19 -->
+    <div class="slide layout" id="slide19" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <div class="bloc-colonne">
+        <h1 class="sous-titre fade-in" id="titre19"><em>Aline</em> : la supplique d’un appel à la raison</h1>
+        <p class="texte fade-in" id="paragraphe19"></p>
+        <div class="conteneur-btns">
+          <button class="btn-texte" id="texte-r19">← Retour</button>
+          <button class="btn-texte" id="texte-s19">Suivant →</button>
+        </div>
+        <button class="btn-suivant" style="display: none">→</button>
+      </div>
+      <div class="bloc-image">
+        <img class="image-seule" alt="Illustration">
+      </div>
+    </div>
+
+    <!-- Diapo 20 -->
+    <div class="slide layout" id="slide20" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <!-- Colonne gauche titre -->
+      <div class="colonne-gauche">
+        <h1 class="titre fade-in" id="titre20">CONCLUSION</h1>
+        <!-- <h1 class="sous-titre fade-in" id="sous-titre2">NAISSANCE D'UN CHEF-D’ŒUVRE VIDÉOLUDIQUE FRANÇAIS</h1> -->
+      </div>
+      <!-- Colonne centrale : obélisque -->
+      <div class="colonne-centre">
+        <div class="forme-obelisque"></div>
+      </div>
+      <!-- Colonne droite : texte -->
+      <div class="colonne-droite">
+        <div class="bloc-colonne">
+          <p class="texte fade-in" id="paragraphe20"></p>            
+          <button class="btn-suivant" style="display: none">→</button>
+            <div class="conteneur-btns">
+              <button class="btn-texte" id="texte-r20">← Retour</button>
+              <button class="btn-texte" id="texte-s20">Suivant →</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diapo 21 -->
+    <div class="slide layout" id="slide21" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <img src="images/fin.webp" class="image-ecran">
+    </div>
+    
+    <script>
+      window.onload = () => {
+        // Eléments globaux
+        // Slides
+        const slide1 = document.getElementById("slide1");
+        const slide2 = document.getElementById("slide2");
+        const slide3 = document.getElementById("slide3");
+        const slide4 = document.getElementById("slide4");
+        const slide5 = document.getElementById("slide5");
+        const slide6 = document.getElementById("slide6");
+        const slide7 = document.getElementById("slide7");
+        const slide8 = document.getElementById("slide8");
+        const slide9 = document.getElementById("slide9");
+        const slide10 = document.getElementById("slide10");
+        const slide11 = document.getElementById("slide11");
+        const slide12 = document.getElementById("slide12");
+        const slide13 = document.getElementById("slide13");
+        const slide14 = document.getElementById("slide14");
+        const slide15 = document.getElementById("slide15");
+        const slide16 = document.getElementById("slide16");
+        const slide17 = document.getElementById("slide17");
+        const slide18 = document.getElementById("slide18");
+        const slide19 = document.getElementById("slide19");
+        const slide20 = document.getElementById("slide20");
+        const slide21 = document.getElementById("slide21");
+        // Boutons
+        const btnMusique = document.getElementById("btn-musique");
+        const btnSuivant1 = slide1.querySelector(".btn-suivant");
+        const btnTexte2 = document.getElementById("texte-s2");
+        const btnTexteR2 = document.getElementById("texte-r2");
+        const btnSuivant2 = slide2.querySelector(".btn-suivant");
+        const btnTexte3 = document.getElementById("texte-s3");
+        const btnTexteR3 = document.getElementById("texte-r3");
+        const btnSuivant3 = slide3.querySelector(".btn-suivant");
+        const btnTexte5 = document.getElementById("texte-s5");
+        const btnTexteR5 = document.getElementById("texte-r5");
+        const btnSuivant5 = slide5.querySelector(".btn-suivant");
+        const btnTexte6 = document.getElementById("texte-s6");
+        const btnTexteR6 = document.getElementById("texte-r6");
+        const btnSuivant6 = slide6.querySelector(".btn-suivant");
+        const btnTexte7 = document.getElementById("texte-s7");
+        const btnTexteR7 = document.getElementById("texte-r7");
+        const btnSuivant7 = slide7.querySelector(".btn-suivant");
+        const btnTexte8 = document.getElementById("texte-s8");
+        const btnTexteR8 = document.getElementById("texte-r8");
+        const btnSuivant8 = slide8.querySelector(".btn-suivant");
+        const btnTexte9 = document.getElementById("texte-s9");
+        const btnTexteR9 = document.getElementById("texte-r9");
+        const btnSuivant9 = slide9.querySelector(".btn-suivant");
+        const btnTexte10 = document.getElementById("texte-s10");
+        const btnTexteR10 = document.getElementById("texte-r10");
+        const btnSuivant10 = slide10.querySelector(".btn-suivant");
+        const btnTexte11 = document.getElementById("texte-s11");
+        const btnTexteR11 = document.getElementById("texte-r11");
+        const btnSuivant11 = slide11.querySelector(".btn-suivant");
+        const btnTexte12 = document.getElementById("texte-s12");
+        const btnTexteR12 = document.getElementById("texte-r12");
+        const btnSuivant12 = slide12.querySelector(".btn-suivant");
+        const btnTexte13 = document.getElementById("texte-s13");
+        const btnTexteR13 = document.getElementById("texte-r13");
+        const btnSuivant13 = slide13.querySelector(".btn-suivant");
+        const btnTexte14 = document.getElementById("texte-s14");
+        const btnTexteR14 = document.getElementById("texte-r14");
+        const btnSuivant14 = slide14.querySelector(".btn-suivant");
+        const btnTexte15 = document.getElementById("texte-s15");
+        const btnTexteR15 = document.getElementById("texte-r15");
+        const btnSuivant15 = slide15.querySelector(".btn-suivant");
+        const btnTexte16 = document.getElementById("texte-s16");
+        const btnTexteR16 = document.getElementById("texte-r16");
+        const btnSuivant16 = slide16.querySelector(".btn-suivant");
+        const btnTexte17 = document.getElementById("texte-s17");
+        const btnTexteR17 = document.getElementById("texte-r17");
+        const btnSuivant17 = slide17.querySelector(".btn-suivant");
+        const btnTexte18 = document.getElementById("texte-s18");
+        const btnTexteR18 = document.getElementById("texte-r18");
+        const btnSuivant18 = slide18.querySelector(".btn-suivant");
+        const btnTexte19 = document.getElementById("texte-s19");
+        const btnTexteR19 = document.getElementById("texte-r19");
+        const btnSuivant19 = slide19.querySelector(".btn-suivant");
+        const btnTexte20 = document.getElementById("texte-s20");
+        const btnTexteR20 = document.getElementById("texte-r20");
+        const btnSuivant20 = slide20.querySelector(".btn-suivant");
+        // Musiques
+        const musiqueIntro = document.getElementById("musique1");
+        const musiqueSlide3 = document.getElementById("musique2");
+        const musiqueSlide5 = document.getElementById("musique3");
+        const musiqueSlide6 = document.getElementById("musique4");
+        const musiqueSlide7 = document.getElementById("musique5");
+        const musiqueSlide8 = document.getElementById("musique6");
+        const musiqueSlide9 = document.getElementById("musique7");
+        const accord = document.getElementById("accord");
+        const musiqueSlide10 = document.getElementById("musique8");
+        const musiqueSlide11 = document.getElementById("musique9");
+        const Alicia = document.getElementById("musique1");
+        const Maelle = document.getElementById("musique10");
+        const Lumiere = document.getElementById("musique2");
+        const Renoir = document.getElementById("musique11");
+        const Linen = document.getElementById("musique12");
+        const Déchire = document.getElementById("musique13");
+        const Dualliste = document.getElementById("musique14");
+        const Aria = document.getElementById("musique15");
+        const AimerInstru = document.getElementById("musique16");
+        const Aimer = document.getElementById("musique17");
+        const Aline = document.getElementById("musique18");
+        // Vidéos
+        const videoSlide4 = slide4.querySelector(".video-slide4");
+        // Titres et sous-titres
+        const titre1 = document.getElementById("titre-accueil");
+        const sousTitre1 = document.getElementById("sous-titre-accueil");
+        const titre2 = slide2.querySelector(".titre.fade-in");
+        const sousTitre2 = slide2.querySelector(".sous-titre.fade-in");
+        const titre3 = slide3.querySelector(".sous-titre.fade-in")
+        const titre5 = slide5.querySelector(".sous-titre.fade-in")
+        const titre6 = slide6.querySelector(".sous-titre.fade-in")
+        const titre7 = slide7.querySelector(".sous-titre.fade-in")
+        const titre8 = slide8.querySelector(".sous-titre.fade-in")
+        const titre9 = slide9.querySelector(".sous-titre.fade-in")
+        const titre10 = slide10.querySelector(".sous-titre.fade-in")
+        const titre11 = slide11.querySelector(".sous-titre.fade-in")
+        const titre12 = slide12.querySelector(".sous-titre.fade-in")
+        const titre13 = slide13.querySelector(".sous-titre.fade-in")
+        const titre14 = slide14.querySelector(".sous-titre.fade-in")
+        const titre15 = slide15.querySelector(".sous-titre.fade-in")
+        const titre16 = slide16.querySelector(".sous-titre.fade-in")
+        const titre17 = slide17.querySelector(".sous-titre.fade-in")
+        const titre18 = slide18.querySelector(".sous-titre.fade-in")
+        const titre19 = slide19.querySelector(".sous-titre.fade-in")
+        const titre20 = slide20.querySelector(".sous-titre.fade-in")
+
+        // Fonctions
+        // Maj des slides
+        function majSlide(btnSuivant, slideP, slideS) { //bouton suivant (de la slide précédente), slide précédente, slide suivante)
+          btnSuivant.disabled = true; // Évite les clics multiples
+          slideP.style.display = "none";
+          slideS.style.display = "flex";
+          void slideS.offsetWidth; // force le reflow
+          slideS.style.opacity = 1;
+        };
+
+        // Affichage éléments (texte)
+        function afficherElementsSlide1(slide, pEl, data, indexTexte, btnSuivant, btnRetour) { // data = texte (tableau)
+          // Apparition titres, texte et images
+          const elements = slide.querySelectorAll('.titre, .sous-titre, .texte, .image-moitié, .image-seule, .images-groupe');
+          elements.forEach((el, i) => {
+            setTimeout(() => {
+              el.classList.add("visible");
+            }, i * 300);
+          });
+          // Premier paragraphe
+          pEl.innerHTML = data[indexTexte].texte || data[indexTexte];
+          // Boutons
+          btnSuivant.style.display = "block";
+          btnRetour.style.display = "block";
+          setTimeout(() => {
+            btnSuivant.classList.add("visible");
+          }, 1000);
+        };
+        
+        // Affichage éléments (texte, et image)
+        function afficherElementsSlide2(slide, pEl, imgEl, data, indexTexte, btnSuivant, btnRetour) {const elements = slide.querySelectorAll('.titre, .sous-titre, .texte, .image-moitié, .image-seule, .images-groupe'); elements.forEach((el, i) => {setTimeout(() => {el.classList.add("visible")}, i * 300);}); pEl.innerHTML = data[indexTexte].texte || data[indexTexte]; imgEl.src = (data[indexTexte].image || data[indexTexte]); btnSuivant.style.display = "block"; btnRetour.style.display = "block"; setTimeout(() => {btnSuivant.classList.add("visible");}, 1000);};
+        
+        // Affichage éléments (texte, classe et image)
+        function afficherElementsSlide3(slide, pEl, imgEl, data, indexTexte, btnSuivant, btnRetour) {const elements = slide.querySelectorAll('.titre, .sous-titre, .texte, .image-moitié, .image-seule, .images-groupe'); elements.forEach((el, i) => {setTimeout(() => {el.classList.add("visible");}, i * 300);}); pEl.innerHTML = data[indexTexte].texte || data[indexTexte]; pEl.classList.remove('texte','citation'); pEl.classList.add(data[indexTexte].classe); imgEl.src = (data[indexTexte].image || data[indexTexte]); btnSuivant.style.display = "block"; btnRetour.style.display = "block"; setTimeout(() => { btnSuivant.classList.add("visible");}, 1000);};
+
+        // Maj des paragraphes (texte)
+        function majParagraphe1(pEl, data, i) {
+          pEl.innerHTML = data[i].texte;
+        };
+
+        // Maj des paragraphes (texte + class)
+        function majParagraphe2(pEl, data, i) {
+          pEl.innerHTML = data[i].texte;
+          pEl.classList.remove('texte','citation');
+          pEl.classList.add(data[i].classe);
+        };
+        
+        // Maj des images
+        function majImage(imgEl, data, i) {
+          imgEl.src = data[i].image;
+        };
+
+        // Fonction bouton suivant (texte)
+        function gererBtnTexteSuivant1(pEl, btnSuivant, btnRetour, btnTexte, data, index) {
+          btnRetour.classList.add("visibleR");
+          if (index < data.length - 1) {
+            index++;
+            pEl.innerHTML = data[index];
+          }
+          if (index === data.length - 1) {
+            btnTexte.classList.remove("visible");
+            btnTexte.classList.remove("visibleR");
+            btnSuivant.style.display = "block";
+            setTimeout(() => {
+              btnSuivant.classList.add("visible");
+            }, 500);
+          }
+          return index; // renvoie le nouvel index
+        };
+
+        // Fonction bouton suivant (texte et image)
+        function gererBtnTexteSuivant2(pEl, imgEl, btnSuivant, btnRetour, btnTexte, data, index) {btnRetour.classList.add("visibleR"); if (index < data.length - 1) {index++; pEl.innerHTML = data[index].texte; imgEl.src = data[index].image;} if (index === data.length - 1) {btnTexte.classList.remove("visible"); btnTexte.classList.remove("visibleR"); btnSuivant.style.display = "block"; setTimeout(() => {btnSuivant.classList.add("visible");}, 500);}
+          return index;};
+
+        // Fonction bouton suivant (texte, classe et image)
+        function gererBtnTexteSuivant3(pEl, imgEl, btnSuivant, btnRetour, btnTexte, data, index) {btnRetour.classList.add("visibleR"); if (index < data.length - 1) {index++; pEl.innerHTML = data[index].texte; pEl.classList.remove('texte','citation'); pEl.classList.add(data[index].classe); imgEl.src = data[index].image;} if (index === data.length - 1) {btnTexte.classList.remove("visible"); btnTexte.classList.remove("visibleR"); btnSuivant.style.display = "block"; setTimeout(() => {btnSuivant.classList.add("visible");}, 500);}
+          return index;};
+
+        // Fonction bouton précédent (texte)
+        function gererBtnTexteRetour1(pEl, btnSuivant, btnRetour, btnTexte, data, index) {
+          btnTexte.classList.add("visibleR");
+          if (index > 0) {
+            index--;
+            pEl.innerHTML = data[index];
+            btnSuivant.classList.remove("visible");
+          }
+          if (index === 0) {
+            pEl.innerHTML = data[index];
+            btnRetour.classList.remove("visibleR");
+          }
+          return index; // renvoie le nouvel index mis à jour
+        };
+
+        // Fonction bouton précédent (texte et image)
+        function gererBtnTexteRetour2(pEl, imgEl, btnSuivant, btnRetour, btnTexte, data, index) {btnTexte.classList.add("visibleR"); if (index > 0) { index--; pEl.innerHTML = data[index].texte; imgEl.src = data[index].image; btnSuivant.classList.remove("visible");} if (index === 0) {pEl.innerHTML = data[index].texte; imgEl.src = data[index].image; btnRetour.classList.remove("visibleR");}
+          return index;};
+
+        // Fonction bouton précédent (texte, classe et image)
+        function gererBtnTexteRetour3(pEl, imgEl, btnSuivant, btnRetour, btnTexte, data, index) {btnTexte.classList.add("visibleR"); if (index > 0) {index--; pEl.innerHTML = data[index].texte; pEl.classList.remove('texte','citation'); pEl.classList.add(data[index].classe); imgEl.src = data[index].image; btnSuivant.classList.remove("visible");} if (index === 0) {pEl.innerHTML = data[index].texte; pEl.classList.remove('texte','citation'); pEl.classList.add(data[index].classe);  imgEl.src = data[index].image; btnRetour.classList.remove("visibleR");}
+          return index;};
+        
+        // Fonction pour passer à un certain timecode quand le tableau est à une certaine ligne (une seule fois)
+        function timecodeAudio(index, i, dejaClique, audio, timecode) { //i = ligne du tableau
+          if (index === i && !dejaClique) {
+            audio.currentTime = timecode;
+            return true;
+          }
+          return dejaClique;
+        };
+        //Fonction pour arrêter et lancer une musique quand le tableau est à une certaine ligne (une seule fois)
+        function arretLancementAudio(index, i, dejaClique, audio1, timecode1, audio2, timecode2) { //i = ligne du tableau
+            if (index === i && !dejaClique) {
+              audio1.pause(); audio1.currentTime = timecode1;
+              audio2.currentTime = timecode2; audio2.play();
+              return true;
+            }
+            return dejaClique
+          };
+
+        // === Diapo 1 : Intro + musique ===
+        btnMusique.addEventListener("click", () => {
+          musiqueIntro.play().then(() => {
+            btnMusique.style.display = "none";
+
+            setTimeout(() => {
+              titre1.classList.add("visible");
+              setTimeout (() => {
+                sousTitre1.classList.add("visible");
+                btnSuivant1.style.display = "block";
+                setTimeout(() => {
+                  btnSuivant1.classList.add("visible");
+                }, 2800);
+              }, 2300);
+            }, 300);
+
+          }).catch(err => {
+            console.error("⚠️ Erreur audio :", err);
+            alert("Le navigateur a bloqué le son. Cliquez à nouveau." + err);
+          });
+        });
+
+        // === Diapo 2 : Création du jeu ===
+        const texte2 = [ // Texte de la diapo 2
+          `<p><strong><em>Clair-Obscur : Expédition 33</em></strong> est le tout premier jeu vidéo du studio français indépendant <strong>Sandfall Interactive</strong>, basé à Montpellier (😎). Fondé en 2020 par des vétérans de l’industrie (anciens de <strong>Guerilla Games</strong>, <strong>Ubisoft</strong>, ou encore <strong>Activision</strong>), le studio se donne pour mission audacieuse de prouver qu’on peut créer un jeu profond, poétique et ambitieux sans disposer des moyens colossaux des géants du secteur. Grâce au soutien de l’éditeur <strong>Kepler Interactive</strong>, le jeu a pu bénéficier de doublages professionnels en anglais et d’un lancement simultané à l’international sur PC, PS5 et Xbox Series.</p>`,
+          `<p>Sorti en <strong>avril</strong> 2025, le jeu est aussitôt salué par la critique du monde entier. Grâce à sa direction artistique unique, son système de jeu accessible et son histoire bouleversante, il touche un très large public, bien au-delà des joueurs habituels.</p><p>Malgré la petite taille de son équipe, <strong>Sandfall Interactive</strong> réalise un exploit : <strong>plus de 3 millions d’exemplaires</strong> vendus en un mois, une nomination au titre de jeu de l’année, et des éloges de créateurs emblématiques comme <strong>Hideo Kojima</strong> (<em>Metal Gear Solid</em>) ou le studio <strong>Square Enix</strong>, célèbre pour sa saga mythique <em>Final Fantasy</em>.</p>`,
+          `<p>La bande originale, composée par <strong>Lorien Testard</strong>, est également acclamée pour sa richesse émotionnelle et son style singulier qui mêle avec finesse musique électronique et ensemble de chambre vocal et instrumental. Intimement liée à la narration, elle devient un vecteur de l’intrigue et contribue à faire du jeu une véritable <strong>œuvre sensorielle</strong> entre peinture vivante, conte tragique et musique orchestrale.</p>`
+        ];        
+
+        let indexTexte2 = 0; // Correspond au numéro du paragraphe -1
+        const pTexte2 = document.getElementById("paragraphe2");
+
+        btnSuivant1.addEventListener("click", () => {
+          majSlide(btnSuivant1, slide1, slide2);
+          afficherElementsSlide1(slide2, pTexte2, texte2, indexTexte2, btnTexte2, btnTexteR2);
+        });
+
+        btnTexte2.addEventListener("click", () => {
+          indexTexte2 = gererBtnTexteSuivant1(pTexte2, btnSuivant2, btnTexteR2, btnTexte2, texte2, indexTexte2);
+        });
+
+        btnTexteR2.addEventListener("click", () => {
+          indexTexte2 = gererBtnTexteRetour1(pTexte2, btnSuivant2, btnTexteR2, btnTexte2, texte2, indexTexte2);
+        });
+
+        // === Diapo 3 : Présentation de l'univers ===
+        const texte3 = [
+          {texte:`<p>L'histoire débute sur l’île de <strong>Lumière</strong>, ville inspirée d’un Paris à la charnière entre 19ème et 20ème siècles, aux <strong>allures postapocalyptiques</strong>.</p><p>À noter que le postapocalyptique est un sous-genre de la science-fiction qui, généralement, se retrouve dans des univers modernes, voire futuristes. Voir ce genre mêlé à de la fantasy est un point qui me semble important à souligner.</p>`,
+          image:"images/lumiere.jpg"},
+          {texte:`<p><strong>Il y a 67 ans</strong>, le monde a connu un évènement brutal : <strong><em>la fracture</em></strong> (phénomène assez comparable à celui de <em>la déchirure</em> dans <strong><em>La Passe-Miroir</em></strong>). Le continent a été <strong>brisé en morceaux</strong> et des hordes de monstres appelés <strong>névrons</strong> y ont fait leur apparition. Seul un fragment de la ville de Lumière qui s’est retrouvé propulsé tout au sud de cet archipel a été épargné, constituant le <strong>dernier bastion de l’humanité</strong>.</p><p>À son strict opposé, loin au nord sur des terres désolées, une <strong>funeste entité</strong> a fait son apparition…</p>`,
+          image:"images/lumiere.jpg"},
+          {texte:`<p><strong><em>La Peintresse</em></strong>.</p><p>Chaque année, elle sort d’un long sommeil pour <strong>peindre sur un monolithe géant</strong> un nombre toujours décroissant. Les personnes ayant un âge égal ou supérieur à ce nombre sont alors <strong><em>gommées</em></strong>, disparaissant dans une pluie de pétales. Chaque année, une <strong>expédition</strong> de volontaires est envoyée sur le continent afin de mettre un terme aux agissements de la <em>Peintresse</em>, mais aucune n’est encore parvenue à la vaincre.</p>`,
+          image:"images/peintresse.png"},
+          {texte:`<p>Le jeu s’ouvre alors que la ville de Lumière se prépare à vivre un <em>Gommage</em> de plus. Cet évènement est désormais devenu une fatalité pour les habitants qui ont pris l’habitude de le célébrer : en guise d’adieu, ils tressent des <strong>couronnes de fleurs</strong> qu’ils offrent à leurs proches sur le point de disparaître.</p><p>Le joueur incarne <strong>Gustave</strong>, un ingénieur âgé de 32 ans. À quelques heures du <em>gommage</em> de <strong>Sophie</strong>, 33 ans – son ancienne compagne qu’il n’a jamais cessé d’aimer –, tous deux partagent quelques ultimes instants de tendresse et de souvenirs. Après quoi, Gustave embarquera avec <strong>l’Expédition 33</strong> qui s'apprête à lever les voiles vers l’inconnu.</p>`,
+          image:"images/gusphie.jpg"},
+          {texte:`<p>Introduire un jeu vidéo avec justesse est un défi délicat : il faut permettre au joueur de <strong>s’imprégner de l’univers</strong>, <strong>d’apprivoiser les commandes</strong>, tout en évitant les écueils d’une exposition pesante ou de tutoriels envahissants. Ici, ce pari est brillamment relevé.</p><p>L’ouverture, <strong>à la fois douce et menaçante</strong>, laisse le joueur arpenter les rues de Lumière, ville résignée à son inéluctable déclin. Dans cette ambiance suspendue, on apprend à connaître Sophie — on s’y attache, même en sachant que son destin est scellé.</p><p>La scène poignante du <strong><em>Gommage</em></strong> vient clore cette ouverture, <strong>ancrant l’émotion au cœur de l’aventure à venir</strong>.</p>`,
+          image:"images/gusphie.jpg"}
+        ]
+
+        let indexTexte3 = 0;
+        const pTexte3 = document.getElementById("paragraphe3");
+        const image3 = slide3.querySelector(".image-moitié")
+
+        btnSuivant2.addEventListener("click", () => {
+          majSlide(btnSuivant2, slide2, slide3);
+          // Arrêt de la musique (et vidéo) précédente(s) et lancement de la nouvelle musique
+          musiqueIntro.pause(); musiqueIntro.currentTime = 0; videoSlide4.pause(); videoSlide4.currentTime = 0;
+          musiqueSlide3.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide3, pTexte3, image3, texte3, indexTexte3, btnTexte3, btnTexteR3);
+        });
+
+        btnTexte3.addEventListener("click", () => {
+          indexTexte3 = gererBtnTexteSuivant2(pTexte3, image3, btnSuivant3, btnTexteR3, btnTexte3, texte3, indexTexte3);
+        });
+
+        btnTexteR3.addEventListener("click", () => {
+          indexTexte3 = gererBtnTexteRetour2(pTexte3, image3, btnSuivant3, btnTexteR3, btnTexte3, texte3, indexTexte3);
+        });
+
+        // === Diapo 4 : Vidéo gommage ===
+        btnSuivant3.addEventListener("click", () => {
+          btnSuivant3.disabled = true;
+          slide3.style.display = "none";
+          slide4.style.display = "flex";
+          void slide4.offsetWidth; // force le reflow
+          slide4.style.opacity = 1;
+          // Arrêt de la musique précédente et lancement de la nouvelle musique
+          musiqueSlide3.pause();
+          musiqueSlide3.currentTime = 0;
+          // Lancement de la vidéo
+          videoSlide4.currentTime = 0;
+          videoSlide4.play();
+        })
+
+        // === Diapo 5 : l'expédition 33 et le continent ===
+        const texte5 = [
+          {texte:`<p>Chaque expédition porte le numéro actuellement peint par la <em>peintresse</em> – à l’exception de la première expédition, partie en l’an 100 du monolithe, que l’on nomme encore aujourd’hui <strong>l’Expédition Zéro</strong>. Au fil des années, à mesure que la population de Lumière se réduit et rajeunit, les candidats au départ se font plus rares.</p><p><strong>L’Expédition 33</strong> ne compte que <strong>quinze membres</strong>. Tous sont dans leur dernière année de vie, à l’exception de <strong>Maelle</strong>. <strong>Jeune orpheline de 16 ans</strong> recueillie par Gustave et sa sœur Emma, elle choisit de suivre son tuteur. Bien qu’il lui reste encore une dizaine d’années à vivre, partir lui semble la seule évidence car elle ne s’est jamais sentie à sa place à Lumière.</p>`,
+          images: "images/maelle-lumiere.webp"},
+          {texte:`<p>À peine débarqués sur le continent, les membres de l’expédition tombent dans une <strong>embuscade</strong>. Ils sont décimés par <strong>un homme aux cheveux grisonnants</strong> – plus vieux qu’aucun être humain ne devrait l’être –, qui mène une horde de créatures : les <strong>névrons</strong>.</p>`,
+          images: "images/renoir-peint.webp"},
+          {texte:`<p>Seuls quatre en réchappent : <strong>Gustave</strong>, <strong>Maelle</strong>, <strong>Lune</strong> et <strong>Sciel</strong>. Malgré les pertes, ils choisissent de poursuivre la mission car Gustave porte avec lui une invention qui pourrait tout changer. De plus, les expéditions ont pour principe de ne <strong>jamais abandonner</strong>. Leur devise est sans appel : <strong>« When one falls, we continue. »</strong>.</p>`,
+          images: ["images/gustave.webp", "images/maelle.webp", "images/lune.avif", "images/sciel.webp"]},
+          {texte:`<p>Ainsi, ils partent à la découverte de cette terre inconnue, de ses paysages merveilleux et des créatures fantastiques qui l’habitent. En effet, bien que le continent soit un lieu hostile, certaines espèces sont parvenues à y prospérer :</p><p>- Les <strong>gestrals</strong>, des mannequins de bois avec des poils de pinceau en guise de cheveux.</p><p>- Les <strong>grandis</strong>, de hauts êtres velus semblables à des yétis, vivant reclus dans les montagnes.</p><p>- Et <strong>Esquie</strong>, une gigantesque créature volante qui vient en aide au groupe.</p>`,
+          images: ["images/golgra.webp", "images/grandis.jpg", "images/esquie.jpg"]},
+          {texte:`<p>Tandis que le groupe progresse dans son périple, Maelle est assaillie par de <strong>mystérieuses visions</strong>. Elle y voit <strong>l’homme aux cheveux gris</strong>, ainsi qu’une <strong>jeune fille masquée</strong>, qui la blâment pour un désastre dont elle ignore encore tout. Ils l’enjoignent de faire demi-tour et de rentrer à Lumière avec ses amis, l’avertissant qu’il s’agira de <strong>sa seule mise en garde</strong>.</p>`,
+          images: "images/alicia-peinte.jpg"},
+          {texte:`<p>En effet, lorsque le groupe croise de nouveau la route du mystérieux homme, celui-ci se montre implacable. Dans un combat perdu d’avance, <strong>Gustave se sacrifie afin de protéger Maelle</strong>. Le reste du groupe est sauvé de justesse par l’arrivée d’un mystérieux inconnu : <strong>Verso</strong>. Ainsi s’achève le premier acte du jeu.</p>`,
+          images: "images/gustave-mort.png"},
+          {texte: `<p>De toutes les œuvres de fiction que j’ai pu parcourir (livres, mangas, films, séries, jeux vidéo…), c’est seulement la deuxième où <strong>le protagoniste meurt bien avant la fin de l’histoire</strong>. Ici, cela intervient à un tiers du jeu. Ce choix narratif provoque un véritable électrochoc qui <strong>bouleverse les repères du joueur</strong> et <strong>redéfinit brutalement les enjeux</strong>. Le ton est réaffirmé : <strong>rien dans cet univers n’est à prendre pour acquis</strong>, et le joueur n’est pas au bout de ses surprises…</p>`,
+          images: "images/gustave-mort.png"}
+        ]
+
+        let indexTexte5 = 0;
+        const pTexte5 = document.getElementById("paragraphe5");
+        const imageContainer5 = document.getElementById("imageContainer5")
+
+        videoSlide4.addEventListener("ended", () => {
+          slide4.style.display = "none";
+          slide5.style.display = "flex";
+          void slide5.offsetWidth; // force le reflow
+          slide5.style.opacity = 1;
+          // Arrêt des musiques précédentes
+          videoSlide4.pause(); videoSlide4.currentTime = 0; musiqueSlide6.pause(); musiqueSlide6.currentTime = 0;
+          musiqueSlide5.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          // Apparition titre, texte et image
+          const elements5 = slide5.querySelectorAll('.sous-titre, .texte, .image-seule, .images-groupe');
+          elements5.forEach((el, i) => {
+            setTimeout(() => {
+              el.classList.add("visible");
+            }, i * 300);
+          });
+          pTexte5.innerHTML = texte5[indexTexte5].texte; // Affichage du 1er paragraphe
+          imageContainer5.innerHTML = `<img src="${texte5[indexTexte5].images}" alt="Illustration" class="image-seule">`;
+          btnTexte5.style.display = "block";
+          btnTexteR5.style.display = "block";
+          setTimeout(() => {
+            btnTexte5.classList.add("visible"); // Affichage du bouton
+          }, 1000);
+        })
+
+        btnTexte5.addEventListener("click", () => {
+          btnTexteR5.classList.add("visibleR");
+          if (indexTexte5 < texte5.length - 1) {
+            indexTexte5++;
+            pTexte5.innerHTML = texte5[indexTexte5].texte;
+            if (Array.isArray(texte5[indexTexte5].images)) {
+              imageContainer5.innerHTML = texte5[indexTexte5].images // Plusieurs images
+                .map(src => `<img src="${src}" alt="Illustration" class="images-groupe">`)
+                .join("");
+            } else {
+              imageContainer5.innerHTML = `<img src="${texte5[indexTexte5].images}" alt="Illustration" class="image-seule">`; // Une seule image
+            }
+          };
+          if (indexTexte5 === texte5.length - 1) {
+                btnTexte5.classList.remove("visible");
+                btnTexte5.classList.remove("visibleR");
+                btnSuivant5.style.display = "block";
+                setTimeout(() => {
+                  btnSuivant5.classList.add("visible");
+                }, 500);
+          };
+        });
+
+        btnTexteR5.addEventListener("click", () => {
+          btnTexte5.classList.add("visibleR");
+          if (indexTexte5 > 0) {
+            indexTexte5--;
+            btnSuivant5.classList.remove("visible");
+            pTexte5.innerHTML = texte5[indexTexte5].texte;
+            if (Array.isArray(texte5[indexTexte5].images)) {
+              imageContainer5.innerHTML = texte5[indexTexte5].images // Plusieurs images
+                .map(src => `<img src="${src}" alt="Illustration" class="images-groupe">`)
+                .join("");
+            } else {
+              imageContainer5.innerHTML = `<img src="${texte5[indexTexte5].images}" alt="Illustration" class="image-seule">`; // Une seule image
+            }
+          };
+          if (indexTexte5 === 0) {
+            btnTexteR5.classList.remove("visibleR");
+            pTexte5.innerHTML = texte5[indexTexte5].texte;
+            if (Array.isArray(texte5[indexTexte5].images)) {
+              imageContainer5.innerHTML = texte5[indexTexte5].images // Plusieurs images
+                .map(src => `<img src="${src}" alt="Illustration" class="images-groupe">`)
+                .join("");
+            } else {
+              imageContainer5.innerHTML = `<img src="${texte5[indexTexte5].images}" alt="Illustration" class="image-seule">`; // Une seule image
+            }
+          };
+        });
+
+        // === Diapo 6 : Bouleversements ===
+        const texte6 = [
+          {texte: `<p><strong>Verso</strong> rejoint le groupe et révèle qu’il est un membre de <strong>la toute première expédition</strong> – <strong>l’Expédition Zéro</strong> – et que l’homme aux cheveux gris est <strong>Renoir, leur commandant</strong>. Tous deux ont mystérieusement <strong>cessé de vieillir</strong> à leur arrivée sur le continent. Renoir, convaincu que son <strong>immortalité</strong> est un <strong>don de la Peintresse</strong>, s’est donné pour mission de la protéger à tout prix. À l’inverse, Verso, lassé de cette existence figée, choisit d’aider le groupe.</p>`,
+          image: "images/verso.webp"},
+          {texte: `<p>Il leur révèle que pour affronter la <strong><em>Peintresse</em></strong>, il leur faut d’abord <strong>désactiver la barrière qui l’entoure</strong> — une défense redoutable <em>gommant</em> quiconque s’en approche de trop près. Pour cela, ils doivent <strong>détruire son cœur</strong> qui se trouve dans le <strong>manoir de Renoir</strong>. Dans la suite de leur périple, ils recrutent un gestral, ami de Verso : <strong>Monoco</strong>.</p>`,
+          image: "images/monoco.jpg"},
+          {texte: `<p>L’expédition atteint les ruines de la <strong>Vielle Lumière</strong> – lieu où se trouvait autrefois la ville, avant que la <em>fracture</em> ne la scinde – et atteint le manoir de Renoir. Des révélations éclatent : <strong>Verso est en réalité le fils de Renoir</strong>, et la jeune fille masquée qui hantait les visions de Maelle n’est autre que <strong>sa sœur, Alicia</strong>. Un combat s’engage, mais Renoir parvient à téléporter le manoir et le cœur de la <em>Peintresse</em>, réduisant à néant les espoirs du groupe.</p>`,
+          image: "images/combat-renoir-peint.webp"},
+          {texte: `<p>Contraints de changer de stratégie, les survivants se tournent vers <strong>une alternative plus périlleuse encore</strong> : forger une arme à partir des cœurs de deux <strong>Axons</strong>, des créatures d’une puissance redoutable, dans l’espoir de <strong>briser la barrière protectrice</strong>.</p>`,
+          image: "images/sirene.avif"},
+          {texte: `<p>Après maintes épreuves, le groupe atteint enfin le monolithe et <strong>affronte <em>la Peintresse</em></strong>. Celle qui, depuis tout ce temps, se cachait derrière ce mannequin géant se révèle être <strong>la mère de Verso : Aline</strong>. Un combat long et éprouvant s’engage.</p>`,
+          image: "images/aline-peintresse.webp"},
+          {texte: `<p>À l’issue de l’affrontement, <strong>la <em>Peintresse</em> est vaincue</strong>, et le nombre inscrit sur le Monolithe s’efface. L’expédition rentre à Lumière, <strong>ses membres accueillis en héros</strong>. Mais alors que la ville célèbre leur retour et pleure les membres disparus… <strong>tous les habitants sont soudainement <em>gommés</em><strong>.</p><p>Le joueur, une fois encore, est <strong>plongé dans un désarroi total</strong>…</p>`,
+          image: "images/retour.webp"}
+        ]
+
+        let indexTexte6 = 0;
+        const pTexte6 = document.getElementById("paragraphe6");
+        const image6 = slide6.querySelector(".image-seule")
+        
+        btnSuivant5.addEventListener("click", () => {
+          majSlide(btnSuivant5, slide5, slide6);
+          musiqueSlide5.pause(); musiqueSlide5.currentTime = 0; musiqueSlide7.pause(); musiqueSlide7.currentTime = 0;
+          musiqueSlide6.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide6, pTexte6, image6, texte6, indexTexte6, btnTexte6, btnTexteR6);
+        })
+
+        btnTexte6.addEventListener("click", () => {
+          indexTexte6 = gererBtnTexteSuivant2(pTexte6, image6, btnSuivant6, btnTexteR6, btnTexte6, texte6, indexTexte6);
+        });
+
+        btnTexteR6.addEventListener("click", () => {
+          indexTexte6 = gererBtnTexteRetour2(pTexte6, image6, btnSuivant6, btnTexteR6, btnTexte6, texte6, indexTexte6);
+        });
+
+        // === Diapo 7 : Un monde peint et une famille en deuil ===
+        const texte7 = [
+          {texte: `<p>Pour nous éclairer – enfin ! – sur toute cette histoire, le jeu nous fait remonter à ses origines. Nous sommes transportés dans <strong>le monde réel, à Paris, en 1905</strong>. <strong>Aline et Renoir Dessendre</strong>, ainsi que <strong>leurs enfants : Cléa, Verso et Alicia</strong>, sont une <strong>famille de peintres</strong>. Ils possèdent la singulière faculté <strong>d’insuffler un fragment de leur âme</strong> dans les toiles qu’ils peignent afin d’y entrer et d’habiter le monde qu’ils y ont créé.</p>`,
+          image: "images/dessendre-family.webp"},
+          {texte: `<p>Aline est à la tête du <strong>Conseil des Peintres</strong>, qui est en conflit avec le <strong>Conseil des Écrivains</strong>. Le jeu reste évasif sur les causes et l’ampleur de ce conflit – les développeurs ayant laissé entendre que <strong><em>Clair-Obscur</em></strong> avait été pensé comme une licence, peut-être en saurons-nous plus dans un jeu futur. Nous savons cependant que ce conflit a déclenché un <strong>incendie</strong> dans le manoir des Dessendre. <strong>Verso y a péri en sauvant sa jeune sœur Alicia</strong>, qui en est ressortie défigurée et muette.</p>`,
+          image: "images/alicia.webp"},
+          {texte: `<p><strong>Dévastée par la mort de son fils</strong>, Aline entre dans une toile peinte par <strong>Verso lorsqu’il était enfant</strong> – son unique tableau, lui qui s’était ensuite dédié à la musique. Elle y façonne un bonheur factice, recréant des <strong>copies peintes de sa famille</strong> et façonnant les <strong>habitants de Lumière</strong>.</p><p>Seulement, habiter une toile trop longtemps a un <strong>coût physique et psychologique</strong>. Inquiet pour son épouse, Renoir la rejoint à son tour, déterminé à la faire revenir. Leur confrontation engendre un cataclysme : la <strong><em>fracture</em></strong>.</p>`,
+          image: "images/aline.webp"},
+          {texte: `<p><strong>Le véritable Renoir</strong> parvient à <strong>emprisonner Aline au sommet du monolithe</strong>, mais se retrouve lui-même <strong>piégé à l’intérieur</strong>. Tous deux entrent alors dans une <strong>lutte pour le contrôle de la chroma</strong> : l’énergie magique habitant la toile. Au fur et à mesure qu’il gagne du terrain, Renoir entreprend de <strong><em>gommer</em> une à une les créations de sa femme</strong>, dans l’espoir de détruire cet univers fictif. De son côté, Aline – la <em>Peintresse</em> –, pour alerter les habitants de Lumière du destin qui les guette, <strong>peint chaque année un avertissement dans le ciel</strong>.</p>`,
+          image: "images/monolithe.webp"},
+          {texte: `<p>Le temps s’écoulant beaucoup plus vite dans les mondes peints que dans la réalité, ce statu quo se maintient sur plusieurs décennies.</p><p><strong>Cléa</strong>, désormais à la tête du <strong>Conseil des Peintres</strong> suite à la disparition de sa mère, souhaite mettre fin à l’exil de ses parents. En effet, leur aide lui serait précieuse dans <strong>le conflit qui les oppose toujours aux écrivains</strong>. Elle envoie donc sa jeune sœur <strong>Alicia</strong> prêter main forte à <strong>Renoir</strong> dans l’espoir qu’ensemble, ils puissent <strong>faire sortir Aline de la toile</strong>.</p>`,
+          image: "images/clea.webp"},
+          {texte: `<p>Cependant, <strong>les pouvoirs d’Alicia sont encore instables</strong>. À peine arrivée dans la toile, elle succombe à l’influence de sa mère. Sa mémoire se dissout, son identité s’efface. <strong>Alicia renaît sous le nom de Maelle</strong>, sans plus aucun souvenir de sa véritable origine.</p>`,
+          image:"images/naissance.jpg"}
+        ]
+
+        let indexTexte7 = 0;
+        const pTexte7 = document.getElementById("paragraphe7");
+        const image7 = slide7.querySelector(".image-seule")
+
+        btnSuivant6.addEventListener("click", () => {
+          majSlide(btnSuivant6, slide6, slide7);
+          musiqueSlide6.pause(); musiqueSlide6.currentTime = 0; musiqueSlide8.pause(); musiqueSlide8.currentTime = 0;
+          musiqueSlide7.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide7, pTexte7, image7, texte7, indexTexte7, btnTexte7, btnTexteR7);
+        })
+
+        btnTexte7.addEventListener("click", () => {
+          indexTexte7 = gererBtnTexteSuivant2(pTexte7, image7, btnSuivant7, btnTexteR7, btnTexte7, texte7, indexTexte7);
+        });
+
+        btnTexteR7.addEventListener("click", () => {
+          indexTexte7 = gererBtnTexteRetour2(pTexte7, image7, btnSuivant7, btnTexteR7, btnTexte7, texte7, indexTexte7);
+        });
+
+        // === Diapo 8 : Troisième Acte ===
+        const texte8 = [
+        {texte: `<p><strong>Aline a été chassée du tableau</strong> et ainsi, Maelle recouvre <strong>ses souvenirs du monde extérieur</strong>. À Lumière, il ne reste plus qu’elle et Verso. Ce dernier avoue avoir manipulé l’expédition dans le seul but de <strong>libérer sa mère</strong>.</p><p>Ils sont rejoints par <strong>le vrai Renoir</strong>. Enfin libéré de sa prison et <strong>n’ayant plus à disputer la chroma du tableau à Aline</strong>, il révèle être celui à l’origine du <em>gommage</em> massif. Félicitant Verso et Alicia pour leur accomplissement, il enjoint sa fille à rentrer avec lui. Ainsi, ils pourront <strong>détruire le tableau</strong>, empêchant Aline d’y retourner et mettant fin une bonne fois pour toute à ce <strong>conflit familial</strong>.</p>`,
+        image: "images/maelle-verso.webp"},
+        {texte: `<p>Mais Maelle – qui préfère désormais cette appellation – est réticente. Détruire le tableau reviendrait à <strong>effacer le dernier souvenir de Verso</strong> et abandonner ce monde où elle a grandi et auquel elle s’est attachée. De plus, elle sait que rien ne l’attend dehors sinon la souffrance, le mutisme, une famille qui lui reproche la disparition de son frère et <strong>un deuil insurmontable</strong>.</p><p>Une idée germe alors dans son esprit. Ses souvenirs ayant fait ressurgir <strong>ses pouvoirs de <em>Peintresse</em></strong>, si elle parvenait à reprendre la chroma du tableau à Renoir, elle pourrait <strong>ramener tout le monde… y compris Gustave</strong>. S’engage alors <strong>un nouvel affrontement</strong>, cette fois <strong>entre père et fille</strong>.</p>`,
+        image: "images/alicia-maelle.webp"},
+        {texte: `<p>Maelle prend la fuite avec Verso. Ce faisant, elle parvient à arracher à son père <strong>l’essence de Lune et de Sciel, qu’elle ramène à la vie</strong>. Réunis, les compagnons préparent une contre-attaque. Le joueur comprend alors que le vrai affrontement final du jeu n’est pas celui contre la <em>Peintresse</em>, mais celui contre <strong>le véritable Renoir</strong>.</p><p>Au terme de <strong>cet ultime combat</strong>, Maelle parvient à convaincre son père qu’elle ne <strong>répètera pas les erreurs d’Aline</strong>. Elle lui promet de quitter la toile de temps en temps pour revenir dans le monde réel. De guerre lasse, <strong>Renoir accepte</strong>, choisissant de se raccrocher à ce doux mensonge, et se retire. Tous deux savent cependant que si Maelle venait à quitter la toile, <strong>Renoir n’hésiterait pas à la détruire sur-le-champ</strong>.</p>`,
+        image: "images/combat-conservateur.webp"},
+        {texte: `<p>Contre toute attente, c’est <strong>Verso</strong> – <strong>le seul membre de la famille à n’avoir aucun avenir en-dehors de la toile</strong> – qui offre la plus grande clarté. Ayant été témoin tout au long de son existence des douleurs que ce monde peint inflige à chacun – <strong>y compris aux habitants fictifs</strong> – il comprend que <strong>le seul acte d’amour véritable, c’est de tout arrêter</strong>. S’opposant à Maelle, il prend la décision ultime : <strong>offrir le repos au dernier fragment de son âme, pierre angulaire de la toile</strong>, et ainsi sceller la fin de ce monde.</p>`,
+        image: "images/ame.webp"},
+        {texte: `<p>Le joueur est alors confronté à un dilemme déchirant : <strong>incarner Maelle et préserver l’avenir de la toile</strong>, ou <strong>incarner Verso et assister à la destruction de cette prison illusoire</strong>. Le jeu, alors, semble tendre un miroir au joueur et lui demander : quel monde préfères-tu vraiment ? Celui de la vérité brute ou celui de la beauté choisie ?</p>`,
+        image: "images/affrontement.webp"}         
+        ]
+
+        let indexTexte8 = 0;
+        const pTexte8 = document.getElementById("paragraphe8");
+        const image8 = slide8.querySelector(".image-seule")
+        
+        btnSuivant7.addEventListener("click", () => {
+          majSlide(btnSuivant7, slide7, slide8);
+          musiqueSlide7.pause(); musiqueSlide7.currentTime = 0; musiqueSlide9.pause(); musiqueSlide9.currentTime = 0;
+          musiqueSlide8.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide8, pTexte8, image8, texte8, indexTexte8, btnTexte8, btnTexteR8);
+        })
+
+        btnTexte8.addEventListener("click", () => {
+          indexTexte8 = gererBtnTexteSuivant2(pTexte8, image8, btnSuivant8, btnTexteR8, btnTexte8, texte8, indexTexte8);
+        });
+
+        btnTexteR8.addEventListener("click", () => {
+          indexTexte8 = gererBtnTexteRetour2(pTexte8, image8, btnSuivant8, btnTexteR8, btnTexte8, texte8, indexTexte8);
+        });
+
+        // === Diapo 9 : Maelle : fuir la douleur, peindre un bonheur artificiel ===
+        const texte9 = [
+          {texte: `<p><strong>En incarnant Maelle et en triomphant de Verso</strong>, ce dernier commence à disparaître.</p><p>« Je ne veux pas de cette vie… », implore-t-il, conscient qu’il pourra toujours être recréé tant que subsiste le fragment de son âme.</p>`,
+          image: "images/verso-mort.webp"},
+          {texte: `<p><strong>Dans cet épilogue intitulé <em>Une vie à peindre</em></strong>, on redécouvre Lumière peuplée et animée. Au théâtre de la ville, Maelle attend le lever de rideau aux côtés de <strong>Lune, Sciel, Gustave et Sophie</strong>. Sur scène, Verso s’avance vers un piano, témoignage que <strong>Maelle n’a toujours pas fait son deuil</strong>, le condamnant encore et toujours à faire office de frère de substitution malgré lui. La scène se conclut sur un <strong>accord dissonant</strong>. Un dernier mouvement de caméra révèle <strong>le visage de Maelle se liquéfiant</strong>. C’est le même phénomène qui avait frappé Aline avant elle.</p>`,
+          image: "images/opera.webp"},
+          {texte: `<p>Maelle – ou plutôt Alicia – est en train de devenir <strong>ce qu’elle avait juré de combattre : la nouvelle <em>Peintresse</em></strong>, gardienne éternelle du Tableau. Prisonnière de son deuil, elle perpétue le cycle de création et refuse la réalité, sombrant lentement vers la folie.</p>`,
+          image: "images/maelle-peintresse.jpg"}
+        ]
+
+        let indexTexte9 = 0;
+        const pTexte9 = document.getElementById("paragraphe9");
+        const image9 = slide9.querySelector(".image-seule")
+        
+        btnSuivant8.addEventListener("click", () => {
+          majSlide(btnSuivant8, slide8, slide9);
+          musiqueSlide8.pause(); musiqueSlide8.currentTime = 0; musiqueSlide10.pause(); musiqueSlide10.currentTime = 0;
+          musiqueSlide9.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide9, pTexte9, image9, texte9, indexTexte9, btnTexte9, btnTexteR9);
+        })
+
+        btnTexte9.addEventListener("click", () => {
+          indexTexte9 = gererBtnTexteSuivant2(pTexte9, image9, btnSuivant9, btnTexteR9, btnTexte9, texte9, indexTexte9);
+          if (indexTexte9 === texte9.length - 1) {
+            accord.play();
+            accord.currentTime = 0;
+          }
+        });
+
+        btnTexteR9.addEventListener("click", () => {
+          indexTexte9 = gererBtnTexteRetour2(pTexte9, image9, btnSuivant9, btnTexteR9, btnTexte9, texte9, indexTexte9);
+        });
+
+        // === Diapo 10 : Verso : casser l’illusion, affronter la douleur ===
+        const texte10 = [
+          {texte: `<p>La fin que beaucoup de joueurs considèrent comme <strong><em>bonne</em></strong> s’obtient si <strong>le joueur choisit d’affronter Maelle en incarnant Verso</strong>. Ce choix peut sembler difficile à faire car <strong>Maelle, jusque-là héroïne, bascule tardivement dans un rôle d’antagoniste</strong>. Beaucoup de joueurs peuvent être tentés de la défendre, tant sa souffrance est palpable.</p><p>Après leur affrontement, Verso prend Maelle dans ses bras et la rassure une dernière fois. <strong>Il conduit ensuite le fragment de son âme vers le chemin du repos</strong>, effaçant l’intégralité du monde peint.</p>`,
+          image: "images/maelle-mort.webp"},
+          {texte: `<p><strong>Dans cet épilogue intitulé <em>Une vie à aimer</em></strong>, la famille Dessendre se recueille devant la tombe de Verso. Renoir et Aline, <strong>longtemps opposés dans le tableau</strong>, ont enfin fait la paix. Alicia, quant à elle, <strong>apprend à accepter la mort de son frère, ainsi que les cicatrices et le mutisme laissés par l’incendie</strong>. Le jeu ne s’achève pas sur une victoire, mais sur un <strong>renoncement courageux</strong> : celui d’affronter la réalité, aussi douloureuse soit-elle, plutôt que de se réfugier dans une illusion.</p>`,
+          image: "images/verso-tombe.webp"}
+        ]
+
+        let indexTexte10 = 0;
+        const pTexte10 = document.getElementById("paragraphe10");
+        const image10 = slide10.querySelector(".image-seule")
+
+        btnSuivant9.addEventListener("click", () => {
+          majSlide(btnSuivant9, slide9, slide10);
+          afficherElementsSlide2(slide10, pTexte10, image10, texte10, indexTexte10, btnTexte10, btnTexteR10);
+        });
+
+        btnTexte10.addEventListener("click", () => {
+          indexTexte10 = gererBtnTexteSuivant2(pTexte10, image10, btnSuivant10, btnTexteR10, btnTexte10, texte10, indexTexte10);
+          if (indexTexte10 === texte10.length - 1) {
+            musiqueSlide9.pause(); musiqueSlide9.currentTime = 0; musiqueSlide11.pause(); musiqueSlide11.currentTime = 0;
+            musiqueSlide10.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          }
+        });
+
+        btnTexteR10.addEventListener("click", () => {
+          indexTexte10 = gererBtnTexteRetour2(pTexte10, image10, btnSuivant10, btnTexteR10, btnTexte10, texte10, indexTexte10);
+          if (indexTexte10 === 0) {
+            musiqueSlide10.pause(); musiqueSlide10.currentTime = 0;
+            musiqueSlide9.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          }
+        });
+
+        // === Diapo 11 : Une bande-son centrale : la musique comme vecteur narratif dans Clair-Obscur ===
+        const texte11 = [
+          {texte: "<p>L’histoire de <em>Clair-Obscur</em> est complexe et il est facile de <strong>manquer bon nombre de détails</strong> lors de sa découverte. Cependant, <strong>en s’y penchant avec attention</strong>, on se rend compte que <strong>la narration s’étend sur une couche supplémentaire : la musique</strong>.</p><p>Dans <strong><em>Clair-Obscur : Expédition 33</em></strong>, la bande-son ne se contente pas d’accompagner l’histoire : <strong>elle la raconte, la devance et la condense</strong>. Que ce soit dans <strong>une langue inventée, un anglais poétique ou un français altéré</strong>, chaque morceau agit comme une <strong>énigme musicale</strong>, révélant des éléments clés de la trame bien avant que le joueur ne soit amené à les découvrir.</p>",
+          image: "images/gestral-guitare.jpg"},
+          {texte: "<p>Le compositeur, <strong>Lorien Testard</strong>, explique avoir rejoint le projet à ses balbutiements. <strong>Guillaume Broche</strong>, le directeur de <strong>Sandfall Interactive</strong>, le recrute après être tombé sur son portfolio Soundclound et lui donne <strong>carte blanche totale</strong>. Ils créent l’univers de Clair-Obscur <strong>main dans la main</strong>. Leur but est de retranscrire une vision d’un <strong>monde en constante mélancolie</strong>, avec parfois des moments de joie et d’accalmie.</p>",
+          image: "images/lorien.webp"},
+          {texte: "<p>Ils recrutent la soprano française <strong>Alice Duport-Percier</strong> – ancienne chanteuse du <em>Grissini Project</em> – car, les doublages originaux du jeu étant en anglais, il était important pour eux <strong>d’intégrer le français à leur univers sonore</strong>. Elle est <strong>la vocaliste principale</strong> de la bande-son et a coécrit avec <strong>Lorien Testard</strong> la plupart des chansons qu’elle interprète.</p>",
+          image: "images/alice.jpg"},
+          {texte: "<p><strong>La langue utilisée pour les chansons</strong> est capitale dans le dérouler de l’histoire. En plus du français et de l’anglais, <strong>une langue a spécialement été inventée pour le projet</strong>. Toutes ces langues interviennent à <strong>différents endroits du jeu</strong> : les chansons avec des paroles claires et limpides vont plutôt apparaître vers la fin afin de ne pas gâcher les révélations importantes au joueur, tandis que les chansons cryptées seront entendues dès le début du jeu.</p><p>Les créateurs expliquent avoir tenu à ce que <strong>tous les joueurs de toutes les nationalités puissent retrouver des sonorités leur étant familières</strong>, sans pour autant comprendre le sens des mots. L’OST a connu un grand engouement dès sa sortie et des joueurs du monde entier se sont mis en quête de décrypter cette mystérieuse langue.</p>",
+          image: "images/album.png"}
+        ]
+
+        let indexTexte11 = 0;
+        const pTexte11 = document.getElementById("paragraphe11");
+        const image11 = slide11.querySelector(".image-seule")
+
+        btnSuivant10.addEventListener("click", () => {
+          majSlide(btnSuivant10, slide10, slide11);
+          musiqueSlide10.pause(); musiqueSlide10.currentTime = 0; Alicia.pause(); Alicia.currentTime = 0; Maelle.pause(); Maelle.currentTime = 0;
+          musiqueSlide11.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide2(slide11, pTexte11, image11, texte11, indexTexte11, btnTexte11, btnTexteR11);
+        })
+
+        btnTexte11.addEventListener("click", () => {
+          indexTexte11 = gererBtnTexteSuivant2(pTexte11, image11, btnSuivant11, btnTexteR11, btnTexte11, texte11, indexTexte11);
+        });
+
+        btnTexteR11.addEventListener("click", () => {
+          indexTexte11 = gererBtnTexteRetour2(pTexte11, image11, btnSuivant11, btnTexteR11, btnTexte11, texte11, indexTexte11);
+        });
+
+        // === Diapo 12 : Alicia : un thème funèbre dès l’écran d’accueil ===
+        const texte12 = [
+          {texte:"<p>La toute première chanson que l’on entend, sur l’écran titre, est <strong>le thème d’Alicia</strong>. Écrite dans cette fameuse langue inventée, elle est la seule chanson dont <strong>la traduction complète et officielle</strong> est dévoilée à la fin de l’épilogue <em>Une vie à peindre</em> – épilogue de Maelle. Elle évoque explicitement <strong>le deuil d’Alicia et sa transformation en Maelle</strong> avant même que le joueur n’ait commencé à jouer.</p>",
+          image: "images/alicia-maelle.webp",
+          classe: "texte"},
+          {texte:"<p>« Maelle a une vie à peindre<br>Douce étoile effacée<br>Alicia a une vie à peindre<br>Verso dans la nuit<br>Lune, près de lui »</p>",
+          image: "images/alicia-maelle.webp",
+          classe: "citation"},
+          {texte:"<p>Autrement dit, la trame centrale de l’histoire nous est déjà révélée <strong>au tout début du jeu</strong>, dissimulée dans une élégie dont – à défaut de comprendre le sens – le joueur perçoit toute <strong>la tristesse et la mélancolie</strong>.</p>",
+          image: "images/alicia-maelle.webp",
+          classe: "texte"}
+        ]
+
+        let indexTexte12 = 0;
+        let dejaClique12 = false;
+        const pTexte12 = document.getElementById("paragraphe12");
+        const image12 = slide12.querySelector(".image-seule")
+
+        btnSuivant11.addEventListener("click", () => {
+          majSlide(btnSuivant11, slide11, slide12);
+          dejaClique12 = false;
+          musiqueSlide11.pause(); musiqueSlide11.currentTime = 0; Lumiere.pause(); Lumiere.currentTime = 0;
+          Alicia.play().catch(err => console.error("⚠️ Erreur musique :", err)); Maelle.play(); Maelle.muted = true;
+          afficherElementsSlide3(slide12, pTexte12, image12, texte12, indexTexte12, btnTexte12, btnTexteR12);
+        })
+
+        btnTexte12.addEventListener("click", () => {
+          indexTexte12 = gererBtnTexteSuivant3(pTexte12, image12, btnSuivant12, btnTexteR12, btnTexte12, texte12, indexTexte12);
+          if (indexTexte12 === 1 ) {
+            if (!dejaClique12) {
+              dejaClique12 = true;
+              Alicia.currentTime = 45;
+              Maelle.currentTime = 45;
+            }
+            Alicia.muted = true;
+            Maelle.muted = false;
+          }
+          else {
+              Alicia.muted = false;
+              Maelle.muted = true;
+          };              
+        });
+
+        btnTexteR12.addEventListener("click", () => {
+          indexTexte12 = gererBtnTexteRetour3(pTexte12, image12, btnSuivant12, btnTexteR12, btnTexte12, texte12, indexTexte12);
+          if (indexTexte12 === 1 ) {
+              Alicia.muted = true;
+              Maelle.muted = false
+          }
+          else {
+            Alicia.muted = false;
+            Maelle.muted = true;
+          };
+        });
+
+        // === Diapo 13 : Lumière : une chanson d’ouverture riche en indices
+
+          const texte13 = [
+          {texte:"<p>Une chanson énigmatique accompagne <strong>la scène d’introduction du jeu</strong>. Parmi ses paroles cryptiques, on distingue les noms de <strong>Gustave</strong> et de <strong>Renoir</strong> — bien avant que ce dernier ne soit identifié comme antagoniste principal du jeu au début du troisième acte.</p><p>Le refrain, quant à lui, fait entendre une phrase lourde de sens :</p>",
+          image: "images/lumiere.jpg",
+          classe: "texte"},
+          {texte:"<p><strong>« Clair-Obscur, trouble de rature, courbera Eiffel »</strong></p>",
+          image: "images/lumiere.jpg",
+          classe: "citation"},
+          {texte:"<strong>Cette expression poétique annonce la <em>fracture</em></strong>, événement qui a désarticulé le monde et distordu les lois de la gravité — jusqu’à <strong>courber la Tour Eiffel</strong> elle-même.</p>",
+          image: "images/lumiere.jpg",
+          classe: "texte"}
+        ]
+
+        let indexTexte13 = 0;
+        let dejaClique13 = false;
+        const pTexte13 = document.getElementById("paragraphe13");
+        const image13 = slide13.querySelector(".image-seule")
+
+        btnSuivant12.addEventListener("click", () => {
+          dejaClique13 = false;
+          majSlide(btnSuivant12, slide12, slide13);
+          Alicia.pause(); Alicia.currentTime = 0; Maelle.pause(); Maelle.currentTime = 0; Renoir.pause(); Renoir.currentTime = 0;
+          Lumiere.play().catch(err => console.error("⚠️ Erreur musique :", err)); Maelle.play(); Maelle.muted = true;
+          afficherElementsSlide3(slide13, pTexte13, image13, texte13, indexTexte13, btnTexte13, btnTexteR13);
+        })
+
+        btnTexte13.addEventListener("click", () => {
+          indexTexte13 = gererBtnTexteSuivant3(pTexte13, image13, btnSuivant13, btnTexteR13, btnTexte13, texte13, indexTexte13);
+          if (indexTexte13 === 1 && !dejaClique13) {
+            dejaClique13 = true;
+            Lumiere.currentTime = 52.75;
+          };
+        });
+
+        btnTexteR13.addEventListener("click", () => {
+          indexTexte13 = gererBtnTexteRetour3(pTexte13, image13, btnSuivant13, btnTexteR13, btnTexte13, texte13, indexTexte13);
+        });
+
+        // === Diapo 14: Renoir : une mise en place des principaux acteurs du jeu ===
+        const texte14 = [
+          {texte: "<p><strong>Renoir occupe une place centrale dans <em>Clair-Obscur</em></strong>. Alicia et lui sont les seuls membres de la famille Dessendre à avoir <strong>leurs deux versions présentes dans le tableau</strong> : celle du monde réel et celle peinte par Aline. <strong>Ces deux incarnations partagent un rôle d’antagoniste</strong>, mais leurs objectifs divergent radicalement : protéger la toile ou la détruire. Paradoxalement, <strong>leurs motivations profondes se ressemblent : protéger et rassembler leur famille</strong>, même si cela implique d’affronter l’un de ses propres membres — Verso pour le Renoir peint, et Aline pour le Renoir réel.</p>",
+          image: "images/renoir.webp",
+          classe: "texte"},
+          {texte:"<p><strong>Le thème de Renoir</strong>, entendu pour la première fois <strong>lors de la scène du <em>gommage</em></strong>, emprunte ses sonorités à <strong>l’espagnol, l’italien et le japonais</strong>. Plusieurs noms émergent clairement : <strong>Aline, Renoir, Alicia, Verso</strong>. Des personnages qui ne nous ont même pas encore été présentés à ce stade du jeu.</p>",
+          image: "images/renoir.webp",
+          classe: "texte"},
+          {texte:"<p><strong>Le nom de Verso est précédé de « fuego »</strong>, une référence directe à l’incendie dans lequel il a péri. On entend également <strong><em>« Alina ai »</em></strong>. Certains joueurs interprètent le mot <em>« ai »</em> comme la retranscription phonétique de <em>« haï »</em> ; cependant, <strong><em>« ai »</em> signifie <em>« amour »</em> en japonais</strong>, ce qui pourrait évoquer la tendresse persistante malgré le conflit.</p>",
+          image: "images/renoir.webp",
+          classe: "texte"},
+        ]
+
+        let indexTexte14 = 0;
+        const pTexte14 = document.getElementById("paragraphe14");
+        const image14 = slide14.querySelector(".image-seule")
+
+        btnSuivant13.addEventListener("click", () => {
+          majSlide(btnSuivant13, slide13, slide14);
+          Lumiere.pause(); Lumiere.currentTime = 0; Linen.pause(); Linen.currentTime = 0;
+          Renoir.play().catch(err => console.error("⚠️ Erreur musique :", err)); Maelle.play(); Maelle.muted = true;
+          afficherElementsSlide3(slide14, pTexte14, image14, texte14, indexTexte14, btnTexte14, btnTexteR14);
+        })
+
+        btnTexte14.addEventListener("click", () => {
+          indexTexte14 = gererBtnTexteSuivant3(pTexte14, image14, btnSuivant14, btnTexteR14, btnTexte14, texte14, indexTexte14);
+        });
+
+        btnTexteR14.addEventListener("click", () => {
+          indexTexte14 = gererBtnTexteRetour3(pTexte14, image14, btnSuivant14, btnTexteR14, btnTexte14, texte14, indexTexte14);
+        });
+
+        // === Diapo 15: Linen and Cotton : indices précurseurs d’un monde peint ===
+        const texte15 = [
+          {texte: "<p>Il s’agit de la <strong>première chanson dans une langue réelle</strong> dont le nom fait référence aux matériaux utilisés pour la <strong>confection d’une toile</strong> : <strong>le lin et le coton</strong>. Elle est entendue <strong>assez tôt</strong> dans le jeu, peu après l’arrivée de l’Expédition 33 sur le continent.</p>",
+          image: "images/peintres.webp",
+          classe: "texte"},
+          {texte:"<p>“Linen and cotton blend<br>Feel the ink flowing in your veins<br>It will be blood of your life”</p>",
+          image: "images/peintres.webp",
+          classe: "citation"},
+          {texte:"<p>Ces paroles sont déjà une première révélation que <strong>les personnages de ce monde sont des créations picturales</strong>.</p>",
+          image: "images/peintres.webp",
+          classe: "texte"}
+        ]
+
+        let indexTexte15 = 0;
+        let dejaClique15 = false;
+        const pTexte15 = document.getElementById("paragraphe15");
+        const image15 = slide15.querySelector(".image-seule")
+
+        btnSuivant14.addEventListener("click", () => {
+          dejaClique15 = false;
+          majSlide(btnSuivant14, slide14, slide15);
+          Renoir.pause(); Renoir.currentTime = 0; Dualliste.pause(); Dualliste.currentTime = 0; Déchire.pause(); Déchire.currentTime = 0;
+          Linen.play().catch(err => console.error("⚠️ Erreur musique :", err)); Maelle.play(); Maelle.muted = true;
+          afficherElementsSlide3(slide15, pTexte15, image15, texte15, indexTexte15, btnTexte15, btnTexteR15);
+        });
+
+        btnTexte15.addEventListener("click", () => {
+          indexTexte15 = gererBtnTexteSuivant3(pTexte15, image15, btnSuivant15, btnTexteR15, btnTexte15, texte15, indexTexte15);
+          if (indexTexte15 === 1 && !dejaClique15) {
+            dejaClique15 = true;
+            Linen.currentTime = 19.5;
+          };
+        });
+
+        btnTexteR15.addEventListener("click", () => {
+          indexTexte15 = gererBtnTexteRetour3(pTexte15, image15, btnSuivant15, btnTexteR15, btnTexte15, texte15, indexTexte15);
+        });
+
+        // === Diapo 16: The Dualliste & Déchire la Toile : les chants du déchirement familial ===
+        const texte16 = [
+          {texte: "<p><strong>« Renoir brisa<br>Renoir ôta »</strong></p>",
+          image: "images/dualliste.webp",
+          classe: "citation"},
+          {texte:"<p>Ces deux chansons livrent des fragments d’histoire dans <strong>un français volontairement déformé ou poétique</strong>. Toutes deux interviennent <strong>durant le deuxième acte</strong>, alors que Maelle – et le joueur – assimilent encore <strong>la disparition de Gustave</strong>.</p>",
+          image: "images/dualliste.webp",
+          classe: "texte"},
+          {texte:"<p>« Aline osa<br>Enferma et fusa<br>Et de son esprit perdra »</p>",
+          image: "images/aline.webp",
+          classe: "citation"},
+          {texte: "<p>« Renoir aida<br>Mais toujours son fils perdra »</p>",
+          image: "images/renoir-peint.webp",
+          classe: "citation"},
+          {texte:"<p>« Verso va déchirer canevas<br>Maelle tristesse dura<br>Amour vivra<br>Alicia va déchirer canevas<br>Renoir pleura »</p>",
+          image: "images/verso.webp",
+          classe: "citation"},
+          {texte: "<p><strong>Le conflit intra-familial</strong> est pleinement évoqué, ainsi que <strong>la fin du jeu</strong> : Verso qui finira par effacer l’intégralité du tableau, forçant Maelle – Alicia – à affronter <strong>la tristesse de son deuil</strong>. Ces informations sont mises à la disposition du joueur, <strong>de façon à peine dissimulée</strong>, alors que ce dernier essaie tout juste d’établir des liens entre tous ces personnages qui lui sont présentés.</p>",
+          image: "images/dessendre-family.webp",
+          classe: "texte"}
+        ]
+
+        let indexTexte16 = 0;
+        let dejaClique16 = false; let dejaClique16Deux = false; let dejaClique16Trois = false; let dejaClique16Quatre = false; let dejaClique16Cinq = false;       
+        const pTexte16 = document.getElementById("paragraphe16");
+        const image16 = slide16.querySelector(".image-seule")
+
+        btnSuivant15.addEventListener("click", () => {
+          dejaClique16 = false; dejaClique16Deux = false; dejaClique16Trois = false; dejaClique16Quatre = false; dejaClique16Cinq = false;
+          majSlide(btnSuivant15, slide15, slide16);
+          Linen.pause(); Linen.currentTime = 0; Aria.pause(); Aria.currentTime = 0;
+          Dualliste.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          const elements16 = slide16.querySelectorAll('.sous-titre, .texte, .image-seule');
+            elements16.forEach((el, i) => {
+              setTimeout(() => {
+                el.classList.add("visible");
+              }, i * 300);
+            })
+            pTexte16.innerHTML = texte16[indexTexte16].texte;
+            image16.src = texte16[indexTexte16].image;
+            pTexte16.className = texte16[indexTexte16].classe;
+            btnTexte16.style.display = "block";
+            btnTexteR16.style.display = "block";
+        })
+
+        Dualliste.addEventListener("timeupdate", () => {
+          if (Dualliste.currentTime >= 18 && !dejaClique16) {
+            dejaclique16 = true;
+            btnTexte16.classList.add("visible");          
+          }
+        });
+
+        btnTexte16.addEventListener("click", () => {
+          indexTexte16 = gererBtnTexteSuivant3(pTexte16, image16, btnSuivant16, btnTexteR16, btnTexte16, texte16, indexTexte16);
+          dejaClique16Deux = timecodeAudio(indexTexte16, 2, dejaClique16Deux, Dualliste, 66)
+                    
+          if (indexTexte16 === 3 & dejaClique16Trois) {
+              Dualliste.pause(); Dualliste.currentTime = 0; Déchire.currentTime = 4.5; Déchire.play();
+          }
+          else {
+            dejaClique16Trois = arretLancementAudio(indexTexte16, 3, dejaClique16Trois, Dualliste, 0, Déchire, 90.75);
+          };
+          dejaClique16Quatre = timecodeAudio(indexTexte16, 4, dejaClique16Quatre, Déchire, 119.5)
+        });
+
+        btnTexteR16.addEventListener("click", () => {
+          indexTexte16 = gererBtnTexteRetour3(pTexte16, image16, btnSuivant16, btnTexteR16, btnTexte16, texte16, indexTexte16);
+          if (indexTexte16 === 2) {
+            Déchire.pause(); Déchire.currentTime = 0; Dualliste.play();
+          }
+        });
+
+        // === Diapo 17: Aria pour un masque de colère : ode à un frère disparu ===
+        const texte17 = [
+          {texte: "<p>Un peu plus tard, le jeu nous en apprend encore un peu plus sur <srtrong>le destin de Verso</srtrong>. Les paroles semblent tout droit <srtrong>sortir de la bouche d’Alicia</srtrong>.</p>",
+          image: "images/maelle-gommage.png",
+          classe: "texte"},
+          {texte: "<p>« I try to remember times that we shared<br>The laughter and love<br>The laughter and love that we always shared<br>He gave his life for mine<br>And I will always mourn<br>My brother’s gone<br>But his love will live on »</p>",
+          image: "images/maelle-gommage.png",
+          classe: "citation"}
+        ]
+
+        let indexTexte17 = 0;
+        let dejaClique17 = false;
+        const pTexte17 = document.getElementById("paragraphe17");
+        const image17 = slide17.querySelector(".image-seule")
+
+        btnSuivant16.addEventListener("click", () => {
+          dejaClique17 = false;
+          majSlide(btnSuivant16, slide16, slide17);
+          Déchire.pause(); Déchire.currentTime = 0; Aimer.pause(); Aimer.currentTime = 0; AimerInstru.pause(); AimerInstru.currentTime = 0;
+          Aria.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide3(slide17, pTexte17, image17, texte17, indexTexte17, btnTexte17, btnTexteR17);
+        });
+
+        btnTexte17.addEventListener("click", () => {
+          indexTexte17 = gererBtnTexteSuivant3(pTexte17, image17, btnSuivant17, btnTexteR17, btnTexte17, texte17, indexTexte17);
+          dejaClique17 = timecodeAudio(indexTexte17, 1, dejaClique17, Aria, 83)
+        });
+
+        btnTexteR17.addEventListener("click", () => {
+          indexTexte17 = gererBtnTexteRetour3(pTexte17, image17, btnSuivant17, btnTexteR17, btnTexte17, texte17, indexTexte17);
+        });
+
+        // === Diapo 18: Une vie à t'aimer : un duel d'amour ===
+        const texte18 = [
+          {texte:"<p>Ce thème – qui fait écho au nom de <strong>l’épilogue de Verso</strong> – est entendu lors des <strong>combats contre le <em>Renoir peint</em></strong> que le joueur affronte à deux reprises. La première fois, c’est <strong>la version instrumentale</strong> qui se joue. Les paroles nous sont seulement révélées <strong>lors du deuxième combat</strong>, à la fin de l’acte 2, juste avant <strong>l’affrontement contre la <em>Peintresse</em></strong>.</p>",
+          image: "images/combat-renoir-peint.webp",
+          classe: "texte"}, 
+          {texte:"<p><strong>Focalisé sur sa survie</strong> – le système de combat du jeu demandant une forte concentration et des réflexes assez poussés – le joueur peut facilement <strong>passer à côté du sens de ces mots</strong>. Pourtant, à l’approche de la grande révélation, <strong>les indices se font de plus en plus explicites</strong>. Il s’agit d’un <strong>duo entre Aline et Renoir</strong> abordant leur bataille au sein de la toile et la disparition de leur fils.</p>",
+          image: "images/combat-renoir-peint.webp",
+          classe: "texte"},           
+          {texte:"<p>« Arrête de m’aimer<br>Je t’aimerai toujours<br>Lâche ce pinceau, quitte cette toile<br>Aline / Renoir</p><p>Je peindrai toujours<br>Arrête de peindre<br>Lâche ce pinceau, quitte cette toile<br>Aline / Renoir »</p>",
+          image: "images/reline.webp",
+          classe: "citation"},
+          {texte:"<p>« Couleurs embrasées<br>Rouge feu, vie ôtée<br>Tableau que je ne peux voir<br>Fermer les yeux<br>reste le noir</p><p>En noir, ses yeux tristes<br>À travers l’or, son rire persiste<br>Dans chaque couleur, une part de lui<br>L’aimer toujours, même s'il n'est plus ici »</p>",
+          image: "images/reline.webp",
+          classe: "citation"}            
+        ]
+
+        let indexTexte18 = 0;
+        let dejaClique18 = false;
+        const pTexte18 = document.getElementById("paragraphe18");
+        const image18 = slide18.querySelector(".image-seule")
+
+        btnSuivant17.addEventListener("click", () => {
+          dejaClique18 = false;
+          majSlide(btnSuivant17, slide17, slide18);
+          Aria.pause(); Aria.currentTime = 15.9; Aline.pause(); Aline.currentTime = 0; AimerInstru.currentTime = 1.75; AimerInstru.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide3(slide18, pTexte18, image18, texte18, indexTexte18, btnTexte18, btnTexteR18);
+        });
+
+        btnTexte18.addEventListener("click", () => {
+          indexTexte18 = gererBtnTexteSuivant3(pTexte18, image18, btnSuivant18, btnTexteR18, btnTexte18, texte18, indexTexte18);
+          if (indexTexte18 === 2) {
+            AimerInstru.pause(); AimerInstru.currentTime = 1.75; Aimer.currentTime = 26; Aimer.play();
+            if (!dejaClique18) {
+              Aimer.addEventListener("timeupdate",() => {
+                if (Aimer.currentTime >=72 && !Aimer.actionFait) {
+                  Aimer.actionFait = true; 
+                  dejaClique18 = true;             
+                  indexTexte18 = 3
+                  majParagraphe2(pTexte18, texte18, 3)
+                  majImage(image18, texte18, 3)
+                }
+              })
+            }
+          }
+          dejaClique18 = timecodeAudio(indexTexte18, 3, dejaClique18, Aimer, 72)
+        });
+
+        btnTexteR18.addEventListener("click", () => {
+          indexTexte18 = gererBtnTexteRetour3(pTexte18, image18, btnSuivant18, btnTexteR18, btnTexte18, texte18, indexTexte18);
+          if (indexTexte18 === 1) {
+            Aimer.pause(); Aimer.currentTime = 26; AimerInstru.currentTime = 1.75; AimerInstru.play();
+          };
+        });
+
+        // === Diapo 19: Aline : la supplique d’un appel à la raison ===
+        const texte19 = [
+          {texte: "<p>Enfin, quand les membres de l’expédition se retrouvent <strong>face à la <em>Peintresse</em></strong> – alors toujours perçue comme objectif final du jeu – ces paroles résonnent :</p>",
+          image: "images/aline-peintresse.webp",
+          classe: "texte"},
+          {texte:"<p>«Sors et fuis<br>Je t’en prie<br>Fuis cet amour maudit<br>Cette toile d’une fausse vie</p><p>Portrait rêvé<br>Imparfait<br>Chaine de ta liberté »</p>",
+          image: "images/aline-peintresse.webp",
+          classe: "citation"},
+          {texte:"<p><strong>La confrontation semble alors prendre un tout autre sens</strong>. Verso et Renoir ne souhaitent qu’une chose : <strong>libérer Aline</strong> qui, depuis 67 ans, est <strong>prisonnière de sa propre création</strong>. Il s’agit du <strong>cri déchirant</strong> d’un mari et d’un fils cherchant à <strong>sauver un être cher brisé</strong> qui se perd un peu plus chaque jour dans une longue descente aux enfers.</p>",
+          image: "images/aline-peintresse.webp",
+          classe: "texte"}
+        ]
+
+        let indexTexte19 = 0;
+        let dejaClique19 = false;
+        const pTexte19 = document.getElementById("paragraphe19");
+        const image19 = slide19.querySelector(".image-seule")
+
+        btnSuivant18.addEventListener("click", () => {
+          dejaClique19 = false;
+          majSlide(btnSuivant18, slide18, slide19);
+          Aimer.pause(); Aimer.currentTime = 26; Aline.play().catch(err => console.error("⚠️ Erreur musique :", err));
+          afficherElementsSlide3(slide19, pTexte19, image19, texte19, indexTexte19, btnTexte19, btnTexteR19);
+        });
+
+        btnTexte19.addEventListener("click", () => {
+          indexTexte19 = gererBtnTexteSuivant3(pTexte19, image19, btnSuivant19, btnTexteR19, btnTexte19, texte19, indexTexte19);
+          dejaClique19 = timecodeAudio(indexTexte19, 1, dejaClique19, Aline, 19.75)
+        });
+
+        btnTexteR19.addEventListener("click", () => {
+          indexTexte19 = gererBtnTexteRetour3(pTexte19, image19, btnSuivant19, btnTexteR19, btnTexte19, texte19, indexTexte19);
+        });
+
+        // === Diapo 20: Conclusion ===
+          
+        const texte20 = [
+          `<p><strong><em>Clair-Obscur : Expedition 33</em> se distingue par la richesse de ses thématiques</strong> et la manière dont elles s’entrelacent au fil de l’histoire. On y explore <strong>le deuil</strong>, à travers des personnages qui peinent à lâcher prise. On y aborde <strong>la mémoire</strong> et la manière dont elle façonne l’identité, mais aussi <strong>l’illusion</strong>, questionnant la frontière entre un <strong>refuge consolateur</strong> et une <strong>prison dorée</strong>.</p>`,
+          `<p>Le jeu interroge également <strong>la transmission familiale</strong>, avec un héritage lourd de non-dits, de blessures et de cycles que chacun tente — ou refuse — de briser. Il met en lumière <strong>le pouvoir créateur et destructeur de l’art</strong>, en incarnant littéralement la peinture comme un monde où l’âme et la matière se confondent.</p>`,
+        ]
+
+        let indexTexte20 = 0
+        const pTexte20 = document.getElementById("paragraphe20");
+
+        btnSuivant19.addEventListener("click", () => {
+          majSlide(btnSuivant19, slide19, slide20);
+          afficherElementsSlide1(slide20, pTexte20, texte20, indexTexte20, btnTexte20, btnTexteR20);
+        });
+
+        btnTexte20.addEventListener("click", () => {
+          indexTexte20 = gererBtnTexteSuivant1(pTexte20, btnSuivant20, btnTexteR20, btnTexte20, texte20, indexTexte20);
+        });
+
+        btnTexteR20.addEventListener("click", () => {
+          indexTexte20 = gererBtnTexteRetour1(pTexte20, btnSuivant20, btnTexteR20, btnTexte20, texte20, indexTexte20);
+        });
+
+        // === Diapo 21: Fin ===
+        btnSuivant20.addEventListener("click", () => {majSlide(btnSuivant20, slide20, slide21)})
+
+      }
+    </script>
+
+  </body>
+</html>
