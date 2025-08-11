@@ -273,7 +273,7 @@
       }
 
       /* Boutons */
-      #btn-musique { /* Bouton pour démarrer la musique */
+      .btn-musique { /* Bouton pour démarrer la musique */
         position: absolute;
         top: 50%;
         left: 50%;
@@ -288,7 +288,7 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         transition: background-color 0.3s ease, transform 0.2s ease;
       }
-      #btn-musique:hover {
+      .btn-musique:hover {
         background-color: #8c7764;
         transform: translate(-50%, -50%) scale(1.05);
       }
@@ -389,7 +389,7 @@
         <h1 id="titre-accueil" class="fade-in">CLAIR-OBSCUR : EXPEDITION 33</h1>
         <h1 id="sous-titre-accueil" class="fade-in">UN VOYAGE POETIQUE ET MUSICAL</h1>
       </div>
-        <button id="btn-musique">Démarrer</button> <!-- Bouton musique -->
+        <button class="btn-musique" id="btn-musique">Démarrer</button> <!-- Bouton musique -->
         <button class="btn-suivant" style="display: none;">→</button>
       </div>
     </div>
@@ -436,6 +436,7 @@
 
     <!-- Diapo 4 -->
     <div class="slide layout" id="slide4" style="display: none; opacity: 0; transition: opacity 1.5s ease;">
+      <button class="btn-musique" id="btn-video" style="display: block; z-index: 10;">▶</button>
       <video class="video-slide4" src="videos/gommage.mp4" muted preload="auto" controls></video>
           <!-- style="max-width: 100%; max-height: 90vh; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"> -->
     </div>
@@ -741,6 +742,7 @@
         const btnTexte3 = document.getElementById("texte-s3");
         const btnTexteR3 = document.getElementById("texte-r3");
         const btnSuivant3 = slide3.querySelector(".btn-suivant");
+        const btnVideo4 = document.getElementById("btn-video");
         const btnTexte5 = document.getElementById("texte-s5");
         const btnTexteR5 = document.getElementById("texte-r5");
         const btnSuivant5 = slide5.querySelector(".btn-suivant");
@@ -1044,11 +1046,14 @@
           // Arrêt de la musique précédente et lancement de la nouvelle musique
           musiqueSlide3.pause();
           musiqueSlide3.currentTime = 0;
+        })
+        btnVideo4.addEventListener("click", () => {
           // Lancement de la vidéo
           videoSlide4.currentTime = 0;
           videoSlide4.muted = true;
           videoSlide4.play();
           videoSlide4.muted = false;
+          btnVideo4.style.display = "none";
         })
 
         // === Diapo 5 : l'expédition 33 et le continent ===
